@@ -18,10 +18,10 @@ public class PacketUtils {
     }
 
     public static double product(PacketList<? extends SingleValuePacket> values) {
-        double summedValues = 0;
+        double product = 1;
         for (SingleValuePacket value : values) {
-            summedValues *= value.getValue();
+            product *= value.getValue();
         }
-        return summedValues;
+        return product;
     }
 }
