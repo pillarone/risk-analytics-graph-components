@@ -12,6 +12,8 @@ class RiskAnalyticsGraphComponentsGrailsPlugin {
             "grails-app/views/error.gsp"
     ]
 
+    def groupId = "org.pillarone"
+
     // TODO Fill in these fields
     def author = "Your name"
     def authorEmail = ""
