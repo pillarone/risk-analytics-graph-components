@@ -17,7 +17,15 @@ public class LognormalClaimsGenerator extends AbstractClaimsGenerator {
 
     @Override
     RandomVariateGen getSeverityGenerator() {
-        return new LognormalGen(MathUtils.getRandomStreamBase(), parmMean, parmStdev);
+        double variance = parmStdev * parmStdev;
+        double meanSquare = parmMean * parmMean;
+        double t = Math.log(1 + (variance / meanSquare));
+        double sigma = Math.sqrt(t);
+        double mu = Math.log(parmMean) - 0.5 * t;
+        if (mu == Double.NaN || sigma == Double.NaN) {
+            throw new IllegalArgumentException("['DistributionType.NaNParameter','" + parmMean + "','" + parmStdev + "']");
+        }
+        return new LognormalGen(MathUtils.getRandomStreamBase(), mu, sigma);
     }
 
     public double getParmMean() {
