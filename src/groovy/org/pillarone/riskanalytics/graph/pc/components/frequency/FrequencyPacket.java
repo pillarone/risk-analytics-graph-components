@@ -8,6 +8,9 @@ import org.pillarone.riskanalytics.core.packets.SingleValuePacket;
  */
 public class FrequencyPacket extends SingleValuePacket {
 
+    public FrequencyPacket() {
+    }
+
     public FrequencyPacket(double value) {
         super(value);
     }

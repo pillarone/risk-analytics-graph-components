@@ -8,6 +8,9 @@ import org.pillarone.riskanalytics.core.packets.SingleValuePacket;
  */
 public class ClaimPacket extends SingleValuePacket {
 
+    public ClaimPacket() {
+    }
+
     public ClaimPacket(double value) {
         super(value);
     }
