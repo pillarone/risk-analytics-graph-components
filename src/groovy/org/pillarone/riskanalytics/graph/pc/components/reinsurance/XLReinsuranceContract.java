@@ -3,6 +3,7 @@ package org.pillarone.riskanalytics.graph.pc.components.reinsurance;
 import org.pillarone.riskanalytics.core.components.ComponentCategory;
 import org.pillarone.riskanalytics.core.packets.PacketList;
 import org.pillarone.riskanalytics.graph.pc.components.claims.ClaimPacket;
+import org.pillarone.riskanalytics.graph.pc.components.utils.PacketUtils;
 
 /**
  * @author martin.melchior (at) fhnw (dot) ch
@@ -11,8 +12,21 @@ import org.pillarone.riskanalytics.graph.pc.components.claims.ClaimPacket;
 @ComponentCategory(categories={"Reinsurance"})
 public class XLReinsuranceContract extends AbstractReinsuranceContract {
 
+    private PacketList<LayerProbabilitiesPacket> outLayerProbabilities = new PacketList<LayerProbabilitiesPacket>(LayerProbabilitiesPacket.class);
+
     private double parmRetention = 0d;
     private double parmLimit = 0d;
+
+    @Override
+    protected void doCalculation() {
+        super.doCalculation();
+        if (isSenderWired(outLayerProbabilities)) {
+            double totalCededClaim = PacketUtils.sum(getOutCededClaims());
+            int layerEntryProbability = totalCededClaim > 0 ? 100 : 0;
+            int layerExitProbability = totalCededClaim == parmLimit ? 100 : 0;
+            outLayerProbabilities.add(new LayerProbabilitiesPacket(layerEntryProbability, layerExitProbability));
+        }
+    }
 
     @Override
     void initCessionFactors(PacketList<ClaimPacket> grossClaims) {
@@ -37,5 +51,13 @@ public class XLReinsuranceContract extends AbstractReinsuranceContract {
 
     public void setParmLimit(double parmLimit) {
         this.parmLimit = parmLimit;
+    }
+
+    public PacketList<LayerProbabilitiesPacket> getOutLayerProbabilities() {
+        return outLayerProbabilities;
+    }
+
+    public void setOutLayerProbabilities(PacketList<LayerProbabilitiesPacket> outLayerProbabilities) {
+        this.outLayerProbabilities = outLayerProbabilities;
     }
 }
