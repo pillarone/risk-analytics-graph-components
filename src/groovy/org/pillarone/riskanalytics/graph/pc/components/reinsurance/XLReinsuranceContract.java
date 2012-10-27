@@ -6,6 +6,8 @@ import org.pillarone.riskanalytics.graph.pc.components.claims.ClaimPacket;
 import org.pillarone.riskanalytics.graph.pc.components.utils.PacketUtils;
 
 /**
+ * One layer only, no reinstatments
+ *
  * @author martin.melchior (at) fhnw (dot) ch
  * @author stefan.kunz (at) intuitive-collaboration (dot) com
  */
@@ -16,9 +18,11 @@ public class XLReinsuranceContract extends AbstractReinsuranceContract {
 
     private double parmRetention = 0d;
     private double parmLimit = 0d;
+    private double availableLimit = 0d;
 
     @Override
     protected void doCalculation() {
+        availableLimit = parmLimit;
         super.doCalculation();
         if (isSenderWired(outLayerProbabilities)) {
             double totalCededClaim = PacketUtils.sum(getOutCededClaims());
@@ -34,7 +38,9 @@ public class XLReinsuranceContract extends AbstractReinsuranceContract {
 
     @Override
     ClaimPacket cededClaim(ClaimPacket grossClaim) {
-        return new ClaimPacket(Math.min(parmLimit, Math.max(grossClaim.getUltimate() - parmRetention, 0)));
+        double cededValue = Math.min(availableLimit, Math.max(grossClaim.getUltimate() - parmRetention, 0));
+        availableLimit = Math.max(0, availableLimit - cededValue);
+        return new ClaimPacket(cededValue);
     }
 
     public double getParmRetention() {
